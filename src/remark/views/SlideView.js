@@ -177,7 +177,7 @@ export default class SlideView {
   createContentElement() {
     let element = Dom.createElement({
       id: this.slide.properties.name ? 'slide-' + this.slide.properties.name : null,
-      innerHTML: this.converter.convertMarkdown(this.slide.content, this.slideShow.getLinks())
+      innerHTML: this.slide.content
     });
 
     this.styleContentElement(element, this.slide.properties);

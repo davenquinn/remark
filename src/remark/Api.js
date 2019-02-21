@@ -117,6 +117,15 @@ export default class Api {
     events.setMaxListeners(0);
 
     return new SlideShow(events, options, (slideShow) => {
+
+      let contentSlides = slideShow.slides.map(slide => {
+        slide.markdown = slide.content;
+        slide.content = this.converter.convertMarkdown(
+          slide.content, slideShow.getLinks()
+        );
+      });
+
+      console.log(slideShow);
       let slideShowView = new SlideShowView(events, options.container, slideShow);
       this.controller = options.controller || new DefaultController(
         events,
