@@ -180,6 +180,22 @@ export default class SlideView {
       innerHTML: this.slide.content
     });
 
+    if (this.slide.hasOwnProperty('renderer') &&
+        typeof this.slide.renderer === "function") {
+      /* Support slide content set with a renderer function
+         TODO: maybe the entire _slide_ should be creatable by a function
+         as well?
+      */
+      renderer(element); // may need to be async but hopefully not
+    } else if (this.slide.hasOwnProperty('html')) {
+      element.innerHTML = this.slide.html;
+    } else {
+      // Fall back to previous default
+      element.innerHTML = this.converter.convertMarkdown(
+          this.slide.content, this.slideShow.getLinks()
+       );
+    }
+
     this.styleContentElement(element, this.slide.properties);
     this.codeBlockHighlighter.highlightCodeBlocks(element, this.slideShow);
 

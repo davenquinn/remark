@@ -29,6 +29,7 @@ class SlideShow {
 
     this.createSlides = this.createSlides.bind(this);
     this.loadFromString = this.loadFromString.bind(this);
+    this.loadFromSlides = this.loadFromSlides.bind(this);
     this.loadFromUrl = this.loadFromUrl.bind(this);
     this.update = this.update.bind(this);
     this.getLinks = this.getLinks.bind(this);
@@ -65,7 +66,13 @@ class SlideShow {
       }
     });
 
-    if (this.options.sourceUrl !== null) {
+    /* Here is where we load the slideshow source
+     * from a string, URL, or otherwise. We are changing
+     * to add a function-based mode that is evaluated first
+     * if provided */
+    if (this.options.slides != null) {
+      this.loadFromSlides(this.options.slides);
+    } else if (this.options.sourceUrl !== null) {
       this.loadFromUrl(this.options.sourceUrl, callback);
     } else {
       this.loadFromString(this.options.source);
@@ -101,6 +108,7 @@ class SlideShow {
   setOptions(options) {
     const defaults = {
       sourceUrl: null,
+      slides: null,
       ratio: '4:3',
       highlightStyle: 'default',
       highlightLines: false,
@@ -146,8 +154,10 @@ class SlideShow {
     this.events.emit('slidesChanged');
   }
 
-  createSlides(slideShowSource) {
-    const parsedSlides = Parser.parse(slideShowSource, this.options);
+  createSlides(parsedSlides) {
+    /* This is the crucial place where the slide markdown source
+     * is parsed into individual "Slide" elements
+     */
     let slides = [];
     let byName = {};
     let layoutSlide;
@@ -156,7 +166,7 @@ class SlideShow {
     slides.byNumber = {};
 
     let slideNumber = 0;
-    
+
     parsedSlides.forEach((slide, i) => {
       let template;
 
@@ -206,18 +216,30 @@ class SlideShow {
         }
       }
     });
-
     return slides;
   }
 
   loadFromString(source) {
     source = source || '';
+    const parsedSlides = Parser.parse(source, this.options);
+    this.loadFromSlides(parsedSlides);
+  }
 
-    this.slides = this.createSlides(source);
+  loadFromSlides(slides) {
+    /* Load from a list of slides already defined as objects
+     * Slides should have either a "content"<string, Markdown>, "html"<string, HTML>, or "renderer"<function>
+     * defined, as well as a properties and links object.
+     * */
+    slides = slides || [];
+
+    this.slides = this.createSlides(slides);
+
     this.slides.forEach((slide) => {
       slide.expandVariables();
     });
 
+    // Not necessarily sure yet which links we are extracting
+    // here
     this.links = {};
     this.slides.forEach((slide) => {
       for (let id in slide.links) {

@@ -24,13 +24,13 @@ export default class Api {
   convert(markdown, options) {
     let parser = Parser;
     let content = parser.parse(markdown || '', options || {})[0].content;
-    
+
     return this.converter.convertMarkdown(content, {}, true);
   }
 
   applyDefaults(options) {
     options = options || {};
-    
+
     const unescape = (source) => {
       return source.replace(/&[l|g]t;/g, (match) => (match === '&lt;' ? '<' : '>'))
         .replace(/&amp;/g, '&')
@@ -44,6 +44,9 @@ export default class Api {
     this.container = options.container;
     this.originalContent = this.container.innerHTML;
 
+    /* Build textual representation of Markdown source from
+     * directly-passed string or contents of source element
+     */
     if (!options.hasOwnProperty('source')) {
       let sourceElement = Dom.getElementById('source');
 
@@ -118,14 +121,6 @@ export default class Api {
 
     return new SlideShow(events, options, (slideShow) => {
 
-      let contentSlides = slideShow.slides.map(slide => {
-        slide.markdown = slide.content;
-        slide.content = this.converter.convertMarkdown(
-          slide.content, slideShow.getLinks()
-        );
-      });
-
-      console.log(slideShow);
       let slideShowView = new SlideShowView(events, options.container, slideShow);
       this.controller = options.controller || new DefaultController(
         events,
