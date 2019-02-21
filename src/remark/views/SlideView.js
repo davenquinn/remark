@@ -180,14 +180,14 @@ export default class SlideView {
       innerHTML: this.slide.content
     });
 
-    if (this.slide.hasOwnProperty('renderer') &&
+    if (this.slide.renderer !== null &&
         typeof this.slide.renderer === "function") {
       /* Support slide content set with a renderer function
          TODO: maybe the entire _slide_ should be creatable by a function
          as well?
       */
-      renderer(element); // may need to be async but hopefully not
-    } else if (this.slide.hasOwnProperty('html')) {
+      this.slide.renderer(element); // may need to be async but hopefully not
+    } else if (this.slide.html !== null) {
       element.innerHTML = this.slide.html;
     } else {
       // Fall back to previous default
@@ -261,6 +261,9 @@ export default class SlideView {
     let backgroundImage = styles.backgroundImage;
     let backgroundSize = styles.backgroundSize;
     let backgroundPosition = styles.backgroundPosition;
+
+    // Set backgroundColor (there might be better ways to do this)
+    this.containerElement.style.backgroundColor = styles.backgroundColor;
 
     // If the user explicitly sets the backgroundSize or backgroundPosition, let
     // that win and early return here.

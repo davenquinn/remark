@@ -4,6 +4,36 @@ import Slide from './Slide';
 import Parser from '../Parser';
 import Dom from "../Dom";
 
+const defaultOptions = {
+  sourceUrl: null,
+  slides: null,
+  ratio: '4:3',
+  highlightStyle: 'default',
+  highlightLines: false,
+  highlightSpans: false,
+  highlightInlineCode: false,
+  highlightLanguage: '',
+  slideNumberFormat: '%current% / %total%',
+  cloneTarget: '_blank',
+  excludedClasses: [],
+  countIncrementalSlides: true,
+  macros: {},
+  transition: false,
+  transitionSpeed: false,
+  slideNumber: false,
+  progressBar: false,
+  controls: false,
+  controlsTutorial: false,
+  controlsLayout: 'bottom-right',
+  controlsBackArrows: 'faded',
+  folio: false,
+  center: false,
+  allowControl: true,
+  navigation: {},
+  translations: {},
+  marked: {}
+};
+
 class SlideShow {
   constructor(events, options, callback) {
     this.events = events;
@@ -72,12 +102,13 @@ class SlideShow {
      * if provided */
     if (this.options.slides !== null) {
       this.loadFromSlides(this.options.slides);
+      if (typeof callback === 'function') {
+        callback(this);
+      }
     } else if (this.options.sourceUrl !== null) {
       this.loadFromUrl(this.options.sourceUrl, callback);
     } else {
-      console.log(this.options.source);
       this.loadFromString(this.options.source);
-
       if (typeof callback === 'function') {
         callback(this);
       }
@@ -107,38 +138,9 @@ class SlideShow {
   }
 
   setOptions(options) {
-    const defaults = {
-      sourceUrl: null,
-      slides: null,
-      ratio: '4:3',
-      highlightStyle: 'default',
-      highlightLines: false,
-      highlightSpans: false,
-      highlightInlineCode: false,
-      highlightLanguage: '',
-      slideNumberFormat: '%current% / %total%',
-      cloneTarget: '_blank',
-      excludedClasses: [],
-      countIncrementalSlides: true,
-      macros: {},
-      transition: false,
-      transitionSpeed: false,
-      slideNumber: false,
-      progressBar: false,
-      controls: false,
-      controlsTutorial: false,
-      controlsLayout: 'bottom-right',
-      controlsBackArrows: 'faded',
-      folio: false,
-      center: false,
-      allowControl: true,
-      navigation: {},
-      translations: {},
-      marked: {}
-    };
 
     this.options = {
-      ...defaults,
+      ...defaultOptions,
       ...options
     };
   }
@@ -170,6 +172,9 @@ class SlideShow {
 
     parsedSlides.forEach((slide, i) => {
       let template;
+
+      // Create properties if it doesn't exist
+      slide.properties = slide.properties || {};
 
       if (slide.properties.continued === 'true' && i > 0) {
         template = slides[slides.length - 1];
@@ -231,9 +236,11 @@ class SlideShow {
      * Slides should have either a "content"<string, Markdown>, "html"<string, HTML>, or "renderer"<function>
      * defined, as well as a properties and links object.
      * */
+
     slides = slides || [];
 
     this.slides = this.createSlides(slides);
+    console.log(this.slides);
 
     this.slides.forEach((slide) => {
       slide.expandVariables();
@@ -331,3 +338,4 @@ class SlideShow {
 }
 
 export default Navigation(Events(SlideShow));
+export {defaultOptions};
