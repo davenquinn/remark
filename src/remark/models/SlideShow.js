@@ -70,11 +70,12 @@ class SlideShow {
      * from a string, URL, or otherwise. We are changing
      * to add a function-based mode that is evaluated first
      * if provided */
-    if (this.options.slides != null) {
+    if (this.options.slides !== null) {
       this.loadFromSlides(this.options.slides);
     } else if (this.options.sourceUrl !== null) {
       this.loadFromUrl(this.options.sourceUrl, callback);
     } else {
+      console.log(this.options.source);
       this.loadFromString(this.options.source);
 
       if (typeof callback === 'function') {
