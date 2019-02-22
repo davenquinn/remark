@@ -54,6 +54,8 @@ export default class SlideView {
   show() {
     addClass(this.containerElement, 'remark-slide-container--visible');
 
+    this.slide.onShow(this.contentElement);
+
     // We need a delay to prevent the transition from execution.
     setTimeout(() => {
       removeClass(this.containerElement, 'remark-slide-container--prev');

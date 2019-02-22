@@ -8,6 +8,8 @@ export default class Slide {
     this.notes = slide.notes || '';
     this.html = slide.html || null;
     this.renderer = slide.renderer || null;
+    this.onShow = slide.onShow || function () {};
+    this.onShow.bind(this);
 
     this.getSlideIndex = this.getSlideIndex.bind(this);
     this.getSlideNumber = this.getSlideNumber.bind(this);
