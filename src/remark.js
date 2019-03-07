@@ -13,3 +13,5 @@ let remark = new Api();
 // Add functionality to parse slides to a list of slides
 remark.parseSlides = parseSlides;
 window.remark = remark;
+
+export default remark;

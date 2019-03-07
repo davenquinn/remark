@@ -1,8 +1,9 @@
 let debug = process.env.NODE_ENV !== 'production';
 debug = true;
 const path = require('path');
+const nodeExternals = require('webpack-node-externals');
 
-module.exports = {
+const frontendConfig = {
   devtool: debug ? 'inline-source-map' : '',
   mode: debug ? 'development' : 'production',
   entry: {
@@ -14,6 +15,7 @@ module.exports = {
     publicPath: '/assets',
     filename: debug ? 'remark.js' : 'remark.min.js'
   },
+  target: 'web',
   module: {
     rules: [
       {
@@ -66,3 +68,44 @@ module.exports = {
     open: true
   }
 };
+
+const backendConfig = {
+  mode: debug ? 'development' : 'production',
+  entry: {
+    remark: __dirname + '/src/remark-node.js'
+  },
+  target: 'node',
+  watch: false,
+  output: {
+    path: path.resolve(__dirname, 'build'),
+    publicPath: '/assets',
+    filename: 'remark.node.js'
+  },
+  module: {
+    rules: [
+      {
+        loader: 'eslint-loader',
+        enforce: 'pre',
+        test: /\.js$/,
+        exclude: /node_modules/
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+            plugins: ['@babel/plugin-proposal-class-properties']
+          }
+        }
+      }
+    ]
+  },
+  optimization: {
+    minimize: false
+  },
+  externals: [nodeExternals()]
+};
+
+module.exports = [ backendConfig, frontendConfig ];
