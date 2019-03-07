@@ -1,10 +1,9 @@
 let debug = process.env.NODE_ENV !== 'production';
-debug = true;
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 
 const frontendConfig = {
-  devtool: debug ? 'inline-source-map' : '',
+  //devtool: debug ? 'inline-source-map' : '',
   mode: debug ? 'development' : 'production',
   entry: {
     remark: __dirname + '/src/remark.js'
@@ -78,7 +77,8 @@ const backendConfig = {
   watch: false,
   output: {
     path: path.resolve(__dirname, 'build'),
-    publicPath: '/assets',
+    library: 'remark',
+    libraryTarget: 'umd',
     filename: 'remark.node.js'
   },
   module: {
