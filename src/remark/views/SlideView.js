@@ -207,7 +207,8 @@ export default class SlideView {
   createNotesElement(notes) {
     let element = Dom.createElement({
       className: 'remark-slide-notes',
-      innerHTML: this.converter.convertMarkdown(notes, this.slideShow.getLinks())
+      innerHTML: notes
+      // this.converter.convertMarkdown(notes, this.slideShow.getLinks())
     });
 
     this.codeBlockHighlighter.highlightCodeBlocks(element, this.slideShow);
